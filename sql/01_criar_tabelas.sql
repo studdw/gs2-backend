@@ -9,9 +9,11 @@
 -- =====================================================================
 
 -- Para recriar tudo do zero, descomente e execute o bloco abaixo antes:
+-- DROP TABLE tb_contato CASCADE CONSTRAINTS;
 -- DROP TABLE tb_validacao CASCADE CONSTRAINTS;
 -- DROP TABLE tb_relato CASCADE CONSTRAINTS;
 -- DROP TABLE tb_usuario CASCADE CONSTRAINTS;
+-- DROP SEQUENCE sq_tb_contato;
 -- DROP SEQUENCE sq_tb_validacao;
 -- DROP SEQUENCE sq_tb_relato;
 -- DROP SEQUENCE sq_tb_usuario;
@@ -97,5 +99,32 @@ CREATE TABLE tb_validacao (
 COMMENT ON TABLE tb_validacao IS 'Votos da comunidade confirmando se o obstaculo ainda existe ou foi resolvido';
 
 CREATE SEQUENCE sq_tb_validacao START WITH 100 INCREMENT BY 1 NOCACHE;
+
+-- ---------------------------------------------------------------------
+-- tb_contato: mensagens da pagina Contato (1 usuario : N contatos)
+-- Visitante sem conta tambem pode escrever: cd_usuario fica nulo.
+-- ---------------------------------------------------------------------
+CREATE TABLE tb_contato (
+    cd_contato     NUMBER(10)      NOT NULL,
+    cd_usuario     NUMBER(10),
+    nm_contato     VARCHAR2(100)   NOT NULL,
+    ds_email       VARCHAR2(150)   NOT NULL,
+    tp_assunto     VARCHAR2(20)    NOT NULL,
+    ds_mensagem    VARCHAR2(1000)  NOT NULL,
+    st_contato     VARCHAR2(12)    DEFAULT 'ABERTO' NOT NULL,
+    dt_envio       TIMESTAMP       NOT NULL,
+    CONSTRAINT pk_tb_contato PRIMARY KEY (cd_contato),
+    CONSTRAINT fk_tb_contato_usuario FOREIGN KEY (cd_usuario)
+        REFERENCES tb_usuario (cd_usuario) ON DELETE SET NULL,
+    CONSTRAINT ck_tb_contato_assunto CHECK (tp_assunto IN
+        ('DUVIDA', 'PROBLEMA_SITE', 'PARCERIA', 'IMPRENSA', 'OUTRO')),
+    CONSTRAINT ck_tb_contato_status CHECK (st_contato IN ('ABERTO', 'RESPONDIDO', 'ARQUIVADO')),
+    CONSTRAINT ck_tb_contato_nome CHECK (LENGTH(TRIM(nm_contato)) >= 3),
+    CONSTRAINT ck_tb_contato_mensagem CHECK (LENGTH(TRIM(ds_mensagem)) >= 10)
+);
+
+COMMENT ON TABLE tb_contato IS 'Mensagens de duvidas, problemas, parcerias e imprensa enviadas pelo site';
+
+CREATE SEQUENCE sq_tb_contato START WITH 100 INCREMENT BY 1 NOCACHE;
 
 COMMIT;

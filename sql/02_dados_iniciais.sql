@@ -72,4 +72,9 @@ INSERT INTO tb_validacao (cd_validacao, cd_relato, cd_usuario, tp_voto, ds_comen
 INSERT INTO tb_validacao (cd_validacao, cd_relato, cd_usuario, tp_voto, ds_comentario, dt_validacao) VALUES (17, 8, 3, 'FOI_RESOLVIDO', NULL, SYSDATE - 4);
 INSERT INTO tb_validacao (cd_validacao, cd_relato, cd_usuario, tp_voto, ds_comentario, dt_validacao) VALUES (18, 8, 4, 'FOI_RESOLVIDO', NULL, SYSDATE - 3);
 
+-- Contatos (cd_usuario nulo = visitante sem conta) ------------------------
+INSERT INTO tb_contato (cd_contato, cd_usuario, nm_contato, ds_email, tp_assunto, ds_mensagem, st_contato, dt_envio) VALUES (1, 2, 'Cida Oliveira', 'cida@rotaparatodos.app', 'DUVIDA', 'Como faço para trocar o meu perfil de mobilidade?', 'RESPONDIDO', SYSDATE - 20);
+INSERT INTO tb_contato (cd_contato, cd_usuario, nm_contato, ds_email, tp_assunto, ds_mensagem, st_contato, dt_envio) VALUES (2, NULL, 'Fernanda Rocha', 'fernanda.rocha@exemplo.com', 'PARCERIA', 'Trabalho na subprefeitura da Vila Mariana e gostaria de usar o painel nas reuniões de obras.', 'ABERTO', SYSDATE - 3);
+INSERT INTO tb_contato (cd_contato, cd_usuario, nm_contato, ds_email, tp_assunto, ds_mensagem, st_contato, dt_envio) VALUES (3, 3, 'Bruno Santos', 'bruno@rotaparatodos.app', 'PROBLEMA_SITE', 'O mapa não carregou no celular ontem à noite.', 'RESPONDIDO', SYSDATE - 10);
+
 COMMIT;
