@@ -16,9 +16,9 @@ Global Solution 2026/2 - CitizenTech.
 
 ## Links
 
-- API no Render: `[PREENCHER]`
-- Vídeo (YouTube, não listado): `[PREENCHER]`
-- Front-end (Vercel): `[PREENCHER]`
+- API no Render: `https://gs2-backend.onrender.com/`
+- Vídeo (YouTube, não listado): `https://youtu.be/tC9lkn-sEkE`
+- Front-end (Vercel): `https://gs2-frontend.vercel.app/`
 
 ## Como rodar localmente
 
