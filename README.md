@@ -11,6 +11,8 @@ Global Solution 2026/2 - CitizenTech.
 | Lucas Kaftan | 571302 | 1TDSPV |
 | Matheus Ruas | 571047 | 1TDSPV |
 | João Carlos Lopes | 568952 | 1TDSPV |
+| Matheus Costa | 573146 | 1TDSPV |
+
 
 ## Links
 
