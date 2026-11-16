@@ -52,6 +52,7 @@ Pré-requisitos: JDK 21 ou mais novo. O Maven não precisa estar instalado (o pr
 | `DB_PASSWORD` | sim | Senha do Oracle |
 | `APP_TOKEN_SECRET` | não | Segredo que assina o token de sessão. Sem ele, a API gera um a cada início |
 | `PORT` | não | Porta HTTP (padrão 8080; o Render define sozinho) |
+| `IA_FLASK_URL` | sim (para a IA) | Endereço da API de IA (Flask), sem barra no final. Padrão: `http://localhost:5000` |
 
 ## Deploy no Render (Docker)
 
@@ -105,6 +106,8 @@ Rotas marcadas com 🔒 exigem o cabeçalho `Authorization: Bearer <token>` (obt
 | POST | `/relatos/classificacoes` | 200 | 400 |
 | GET | `/relatos/{id}/validacoes` | 200 | 404 |
 | POST | `/relatos/{id}/validacoes` 🔒 | 201 + Location | 400, 401, 404, 409 |
+| POST | `/relatos/foto` (multipart: `foto`, `latitude`, `longitude`) | 201 (foto autenticada pela IA) | 400, 413, 422 (foto recusada), 503 (IA fora do ar) |
+| GET | `/relatos/foto/zona-critica?latitude=..&longitude=..` | 200 | 400, 503 |
 | GET | `/validacoes` | 200 | - |
 | GET | `/validacoes/{id}` | 200 | 404 |
 | PUT | `/validacoes/{id}` 🔒 | 200 | 400, 401, 403, 404 |
@@ -212,4 +215,6 @@ Diferenças intencionais em relação ao exemplo da aula:
 
 ## Uso de IA generativa
 
-`[PREENCHER: ferramentas usadas, para quê, e o que o grupo revisou]`
+| Ferramenta | Prompt usado | Para quê | O que o grupo revisou |
+|---|---|---|---|
+| Claude Code (Anthropic) | "acabei de adicionar o arquivo .zip com tudo necessario para integrar, me mande o passo a passo de como implementar isso no meu projeto java" | Integrar a API de IA (Flask, no Render) à API Java: copiar as classes do pacote de integração (`IaFlaskClient`, `RelatoIaController`, DTOs e `IaException`) para as camadas do projeto, criar a rota separada `/relatos/foto` (multipart) sem mexer no CRUD `/relatos` (JSON), configurar a variável `IA_FLASK_URL` e tratar os erros da IA no `ApiExceptionHandler` | Conferimos que o projeto compila, que o CRUD `/relatos` não mudou e testamos `POST /relatos/foto` com uma foto real |

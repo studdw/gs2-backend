@@ -3,6 +3,7 @@ package br.com.fiap.rotaparatodos.handler;
 import br.com.fiap.rotaparatodos.dto.ErroResponseDto;
 import br.com.fiap.rotaparatodos.exception.AcessoNegadoException;
 import br.com.fiap.rotaparatodos.exception.EntidadeNaoEncontradaException;
+import br.com.fiap.rotaparatodos.exception.IaException;
 import br.com.fiap.rotaparatodos.exception.NaoAutenticadoException;
 import br.com.fiap.rotaparatodos.exception.RegraNegocioException;
 import org.slf4j.Logger;
@@ -18,6 +19,8 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.sql.SQLException;
@@ -47,8 +50,10 @@ public class ApiExceptionHandler {
                 new ErroResponseDto("Bad Request", "Não foi possível ler os dados enviados. Confira o JSON e os valores."));
     }
 
-    // 400 - parametro da URL com tipo errado (ex.: /relatos/abc) ou parametro obrigatorio ausente
-    @ExceptionHandler({MethodArgumentTypeMismatchException.class, MissingServletRequestParameterException.class})
+    // 400 - parametro da URL com tipo errado (ex.: /relatos/abc), parametro obrigatorio ausente
+    //       ou POST /relatos/foto sem o campo "foto"
+    @ExceptionHandler({MethodArgumentTypeMismatchException.class, MissingServletRequestParameterException.class,
+            MissingServletRequestPartException.class})
     public ResponseEntity<ErroResponseDto> parametroInvalido(Exception e){
         return ResponseEntity.badRequest().body(
                 new ErroResponseDto("Bad Request", "Parâmetro inválido ou ausente na requisição."));
@@ -101,6 +106,20 @@ public class ApiExceptionHandler {
     public ResponseEntity<ErroResponseDto> regraNegocio(RegraNegocioException e){
         return ResponseEntity.status(HttpStatus.CONFLICT).body(
                 new ErroResponseDto("Conflict", e.getMessage()));
+    }
+
+    // 400 (foto/coordenadas invalidas) ou 503 (IA fora do ar) - erro ao chamar a API de IA (Flask)
+    @ExceptionHandler(IaException.class)
+    public ResponseEntity<ErroResponseDto> erroIa(IaException e){
+        String titulo = e.getStatus() == 503 ? "Service Unavailable" : "Bad Request";
+        return ResponseEntity.status(e.getStatus()).body(new ErroResponseDto(titulo, e.getMessage()));
+    }
+
+    // 413 - foto maior que o limite do application.properties
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<ErroResponseDto> fotoGrande(MaxUploadSizeExceededException e){
+        return ResponseEntity.status(HttpStatus.CONTENT_TOO_LARGE).body(
+                new ErroResponseDto("Content Too Large", "A foto deve ter no máximo 10MB."));
     }
 
     // 500 - erro no banco. A mensagem do SQL fica so no log: a rubrica proibe devolver detalhes do SQL.
